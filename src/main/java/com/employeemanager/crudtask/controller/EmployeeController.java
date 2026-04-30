@@ -3,6 +3,8 @@ package com.employeemanager.crudtask.controller;
 import com.employeemanager.crudtask.entity.Employee;
 import com.employeemanager.crudtask.service.EmployeeService;
 import org.springframework.web.bind.annotation.*;
+import jakarta.validation.Valid;
+
 import java.util.List;
 
 @RestController
@@ -13,18 +15,36 @@ public class EmployeeController {
 
     //Constructor of the Employee Service
     public EmployeeController(EmployeeService employeeService) {
+
         this.employeeService = employeeService;
     }
 
-    //Employee Creation
+    //Adding new employee
     @PostMapping
-    public Employee save(@RequestBody Employee employee) {
+    public Employee save(@Valid @RequestBody Employee employee) {
         return employeeService.create(employee);
     }
 
-    //Updating an employee
+    //Updating employee records
     @PutMapping
-    public Employee update(@RequestBody Employee employee) {
-        return employeeService.update(employee);
+    public Employee update(@PathVariable Long id,
+                           @Valid @RequestBody Employee employee) {
+        return employeeService.update(id, employee);
     }
+
+    //Fetching all employees
+    @GetMapping
+    public List<Employee> findAll() {
+
+        return employeeService.getAll();
+    }
+
+    //Fetch employee by Id
+    @GetMapping("/id")
+    public Employee getById(@PathVariable Long id){
+
+        return employeeService.getById(id);
+    }
+
+
 }

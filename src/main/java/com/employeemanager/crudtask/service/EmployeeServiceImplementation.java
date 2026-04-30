@@ -1,8 +1,9 @@
 package com.employeemanager.crudtask.service;
 
 import com.employeemanager.crudtask.entity.Employee;
+import com.employeemanager.crudtask.exception.DuplicateEmailException;
+import com.employeemanager.crudtask.exception.EmployeeNotFoundException;
 import com.employeemanager.crudtask.repository.EmployeeRepository;
-import com.employeemanager.crudtask.service.EmployeeService;
 
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -15,19 +16,33 @@ public class EmployeeServiceImplementation implements EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    @Override
-    public Employee create(Employee employee) {
-        return employeeRepository.save(employee);
+    private void validateEmail(String email, Long id) {
+        employeeRepository.findByEmail(email).ifPresent(existing -> {
+            throw new DuplicateEmailException("Email already exists: " + email);
+        });
     }
 
     @Override
-    public Employee update(Employee employee) {
-        return null;
+    public Employee create(Employee employee) {
+        validateEmail(employee.getEmail(), null);
+        return employeeRepository.save(employee);
+    }
+
+
+    @Override
+    public Employee update(Long id, Employee employee) {
+        Employee existing = getById(id);
+        validateEmail(employee.getEmail(), id);
+        existing.setEmail(employee.getEmail());
+        return employeeRepository.save(existing);
     }
 
     @Override
     public Employee getById(Long id) {
-        return null;
+        assert EmployeeRepository.findById(id) != null;
+        return (Employee) EmployeeRepository.findById(id)
+                .orElseThrow(() ->
+                        new EmployeeNotFoundException("Employee not found with id: " + id));
     }
 
     @Override
