@@ -1,20 +1,23 @@
 package com.employeemanager.crudtask.repository;
 
 import com.employeemanager.crudtask.entity.Employee;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.lang.ScopedValue;
 import java.util.Optional;
 
 @Repository
-public interface EmployeeRepository extends JpaRepository<Employee, Integer> {
+public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
-    static <T> ScopedValue<T> findById(Long id) {
-        return null;
-    }
+    // Find employee by email
+    Optional<Employee> findByEmail(String email);
 
-    Optional<Object> findByEmail(String email);
+    // Pagination + filtering by department
+    Page<Employee> findByDepartment(String department, Pageable pageable);
+
+    // Pagination + filtering by active status
+    Page<Employee> findByActive(Boolean active, Pageable pageable);
 }
-
-

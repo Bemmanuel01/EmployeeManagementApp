@@ -1,50 +1,59 @@
 package com.employeemanager.crudtask.controller;
 
-import com.employeemanager.crudtask.entity.Employee;
+import com.employeemanager.crudtask.dto.EmployeeRequestDto;
+import com.employeemanager.crudtask.dto.EmployeeResponseDto;
 import com.employeemanager.crudtask.service.EmployeeService;
-import org.springframework.web.bind.annotation.*;
+
 import jakarta.validation.Valid;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/v1/employees") //The base url
-
+@RequestMapping("/api/v1/employees")
 public class EmployeeController {
+
     private final EmployeeService employeeService;
 
-    //Constructor of the Employee Service
     public EmployeeController(EmployeeService employeeService) {
-
         this.employeeService = employeeService;
     }
-
-    //Adding new employee
+    //Employee Creation
     @PostMapping
-    public Employee save(@Valid @RequestBody Employee employee) {
-        return employeeService.create(employee);
+    public EmployeeResponseDto create(@Valid @RequestBody EmployeeRequestDto dto) {
+        return employeeService.create(dto);
     }
-
-    //Updating employee records
-    @PutMapping
-    public Employee update(@PathVariable Long id,
-                           @Valid @RequestBody Employee employee) {
-        return employeeService.update(id, employee);
+    //Update an Employee
+    @PutMapping("/{id}")
+    public EmployeeResponseDto update(@PathVariable Long id,
+                                      @Valid @RequestBody EmployeeRequestDto dto) {
+        return employeeService.update(id, dto);
     }
-
-    //Fetching all employees
+    // Get all employee using pagination
     @GetMapping
-    public List<Employee> findAll() {
-
-        return employeeService.getAll();
+    public Page<EmployeeResponseDto> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "5") int size,
+            @RequestParam(defaultValue = "id") String sort,
+            @RequestParam(required = false) String department,
+            @RequestParam(required = false) Boolean active
+    ) {
+        return employeeService.getAll(page, size, sort, department, active);
     }
-
-    //Fetch employee by Id
-    @GetMapping("/id")
-    public Employee getById(@PathVariable Long id){
-
+    // GET BY ID
+    @GetMapping("/{id}")
+    public EmployeeResponseDto getById(@PathVariable Long id) {
         return employeeService.getById(id);
     }
+    // SOFT DELETE
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        employeeService.delete(id);
+    }
 
-
+    // HARD DELETE
+    @DeleteMapping("/{id}/hard")
+    public void hardDelete(@PathVariable Long id) {
+        employeeService.hardDelete(id);
+    }
 }

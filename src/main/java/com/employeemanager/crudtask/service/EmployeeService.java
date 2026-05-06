@@ -1,28 +1,20 @@
 package com.employeemanager.crudtask.service;
 
-import com.employeemanager.crudtask.entity.Employee;
-import com.employeemanager.crudtask.repository.EmployeeRepository;
-import com.employeemanager.crudtask.service.EmployeeService;
-import com.employeemanager.crudtask.exception.EmployeeNotFoundException;
-import com.employeemanager.crudtask.exception.DuplicateEmailException;
+import com.employeemanager.crudtask.dto.EmployeeRequestDto;
+import com.employeemanager.crudtask.dto.EmployeeResponseDto;
 
-import jakarta.validation.Valid;
-import org.springframework.stereotype.Service;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.data.domain.Page;
 
-import java.math.BigDecimal;
-import java.util.*;
+public interface EmployeeService {
 
-//The services available on the employee manager's app
-@Service
-@Validated
-public interface EmployeeService{
-    Employee create(Employee employee);
+    // Pagination + Filtering
+    Page<EmployeeResponseDto> getAll(int page, int size, String sort,
+                                     String department, Boolean active);
+    EmployeeResponseDto create(EmployeeRequestDto dto);
+    EmployeeResponseDto update(Long id, EmployeeRequestDto dto);
+    EmployeeResponseDto getById(Long id);
 
-    Employee update(Long id, Employee employee);
-
-    Employee getById(Long id);
-
-    List<Employee> getAll();
+    // Soft delete
     void delete(Long id);
+    void hardDelete(Long id);
 }
