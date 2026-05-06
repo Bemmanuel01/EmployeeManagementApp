@@ -1,8 +1,8 @@
 package com.employeemanager.crudtask.controller;
 
-import com.employeemanager.crudtask.dto.EmployeeRequestDto;
-import com.employeemanager.crudtask.dto.EmployeeResponseDto;
-import com.employeemanager.crudtask.service.EmployeeService;
+import com.employeemanager.crudtask.dto.request.EmployeeRequest;
+import com.employeemanager.crudtask.dto.response.EmployeeResponse;
+import com.employeemanager.crudtask.service.service.EmployeeService;
 
 import jakarta.validation.Valid;
 
@@ -20,18 +20,18 @@ public class EmployeeController {
     }
     //Employee Creation
     @PostMapping
-    public EmployeeResponseDto create(@Valid @RequestBody EmployeeRequestDto dto) {
+    public EmployeeResponse create(@Valid @RequestBody EmployeeRequest dto) {
         return employeeService.create(dto);
     }
     //Update an Employee
     @PutMapping("/{id}")
-    public EmployeeResponseDto update(@PathVariable Long id,
-                                      @Valid @RequestBody EmployeeRequestDto dto) {
+    public EmployeeResponse update(@PathVariable Long id,
+                                   @Valid @RequestBody EmployeeRequest dto) {
         return employeeService.update(id, dto);
     }
     // Get all employee using pagination
     @GetMapping
-    public Page<EmployeeResponseDto> getAll(
+    public Page<EmployeeResponse> getAll(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size,
             @RequestParam(defaultValue = "id") String sort,
@@ -42,7 +42,7 @@ public class EmployeeController {
     }
     // GET BY ID
     @GetMapping("/{id}")
-    public EmployeeResponseDto getById(@PathVariable Long id) {
+    public EmployeeResponse getById(@PathVariable Long id) {
         return employeeService.getById(id);
     }
     // SOFT DELETE

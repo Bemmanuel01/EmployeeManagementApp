@@ -1,30 +1,34 @@
-package com.employeemanager.crudtask.dto;
+package com.employeemanager.crudtask.dto.request;
 
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 
-public class EmployeeResponseDto {
-    private Long id;
+public class EmployeeRequest {
+    @NotBlank
+    @Size(max = 50)
     private String firstName;
+
+    @NotBlank
+    @Size(max = 50)
     private String lastName;
+
+    @NotBlank @Email
     private String email;
+
+    @NotBlank @Size(max = 100)
     private String department;
+
+    @NotNull @Min(0)
     private BigDecimal salary;
+
+    @NotNull @PastOrPresent
     private LocalDate dateOfJoining;
+
+    @NotNull
     private Boolean active;
 
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
+    // Getters & Setters
 
     public String getFirstName() {
         return firstName;
@@ -80,21 +84,5 @@ public class EmployeeResponseDto {
 
     public void setActive(Boolean active) {
         this.active = active;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
     }
 }

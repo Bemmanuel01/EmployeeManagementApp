@@ -1,19 +1,18 @@
 package com.employeemanager.crudtask.service.serviceImpl;
 
-import com.employeemanager.crudtask.dto.EmployeeRequestDto;
-import com.employeemanager.crudtask.dto.EmployeeResponseDto;
+import com.employeemanager.crudtask.dto.request.EmployeeRequest;
+import com.employeemanager.crudtask.dto.response.EmployeeResponse;
 import com.employeemanager.crudtask.entity.Employee;
 import com.employeemanager.crudtask.exception.DuplicateEmailException;
 import com.employeemanager.crudtask.exception.EmployeeNotFoundException;
 import com.employeemanager.crudtask.mapper.EmployeeMapper;
 import com.employeemanager.crudtask.repository.EmployeeRepository;
-import com.employeemanager.crudtask.service.EmployeeService;
+import com.employeemanager.crudtask.service.service.EmployeeService;
 
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @Service
 public class EmployeeServiceImplementation implements EmployeeService {
@@ -54,7 +53,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
 
     // CREATE
     @Override
-    public EmployeeResponseDto create(EmployeeRequestDto dto) {
+    public EmployeeResponse create(EmployeeRequest dto) {
 
         Employee employee = EmployeeMapper.toEntity(dto);
 
@@ -68,7 +67,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
 
     // UPDATE
     @Override
-    public EmployeeResponseDto update(Long id, EmployeeRequestDto dto) {
+    public EmployeeResponse update(Long id, EmployeeRequest dto) {
 
         Employee existing = employeeRepository.findById(id)
                 .orElseThrow(() ->
@@ -94,7 +93,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
     // GET BY ID
 
     @Override
-    public EmployeeResponseDto getById(Long id) {
+    public EmployeeResponse getById(Long id) {
 
         Employee employee = employeeRepository.findById(id)
                 .orElseThrow(() -> new EmployeeNotFoundException("Not found"));
@@ -105,8 +104,8 @@ public class EmployeeServiceImplementation implements EmployeeService {
     // GET ALL (PAGINATION)
 
     @Override
-    public Page<EmployeeResponseDto> getAll(int page, int size, String sort,
-                                            String department, Boolean active) {
+    public Page<EmployeeResponse> getAll(int page, int size, String sort,
+                                         String department, Boolean active) {
 
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
 

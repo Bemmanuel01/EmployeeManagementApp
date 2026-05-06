@@ -1,7 +1,7 @@
 package com.employeemanager.crudtask.mapper;
 
-import com.employeemanager.crudtask.dto.EmployeeRequestDto;
-import com.employeemanager.crudtask.dto.EmployeeResponseDto;
+import com.employeemanager.crudtask.dto.request.EmployeeRequest;
+import com.employeemanager.crudtask.dto.response.EmployeeResponse;
 import com.employeemanager.crudtask.entity.Employee;
 
 public class EmployeeMapper {
@@ -9,7 +9,7 @@ public class EmployeeMapper {
     // ==========================
     // DTO → ENTITY
     // ==========================
-    public static Employee toEntity(EmployeeRequestDto dto) {
+    public static Employee toEntity(EmployeeRequest dto) {
 
         Employee employee = new Employee();
 
@@ -25,9 +25,9 @@ public class EmployeeMapper {
     }
     // Mapping ENTITY → DTO
 
-    public static EmployeeResponseDto toResponse(Employee employee) {
+    public static EmployeeResponse toResponse(Employee employee) {
 
-        EmployeeResponseDto dto = new EmployeeResponseDto();
+        EmployeeResponse dto = new EmployeeResponse();
 
         dto.setId(employee.getId());
         dto.setFirstName(employee.getFirstName());
