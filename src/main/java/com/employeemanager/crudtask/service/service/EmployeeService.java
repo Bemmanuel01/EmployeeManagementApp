@@ -2,6 +2,7 @@ package com.employeemanager.crudtask.service.service;
 
 import com.employeemanager.crudtask.dto.request.EmployeeRequest;
 import com.employeemanager.crudtask.dto.response.EmployeeResponse;
+import org.springframework.web.multipart.MultipartFile;
 
 import org.springframework.data.domain.Page;
 
@@ -17,4 +18,5 @@ public interface EmployeeService {
     // Soft delete
     void delete(Long id);
     void hardDelete(Long id);
+    void importExcel(MultipartFile file);
 }

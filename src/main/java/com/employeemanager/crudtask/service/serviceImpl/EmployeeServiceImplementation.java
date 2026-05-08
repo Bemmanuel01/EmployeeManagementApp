@@ -3,16 +3,29 @@ package com.employeemanager.crudtask.service.serviceImpl;
 import com.employeemanager.crudtask.dto.request.EmployeeRequest;
 import com.employeemanager.crudtask.dto.response.EmployeeResponse;
 import com.employeemanager.crudtask.entity.Employee;
+
 import com.employeemanager.crudtask.exception.DuplicateEmailException;
 import com.employeemanager.crudtask.exception.EmployeeNotFoundException;
+
+import com.employeemanager.crudtask.exception.ExcelProcessingException;
 import com.employeemanager.crudtask.mapper.EmployeeMapper;
 import com.employeemanager.crudtask.repository.EmployeeRepository;
 import com.employeemanager.crudtask.service.service.EmployeeService;
 
+import com.employeemanager.crudtask.excel.ExcelHelper;
+import com.employeemanager.crudtask.exception.InvalidFileFormatException;
+
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.web.multipart.MultipartFile;
+
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
+
+import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 @Service
 public class EmployeeServiceImplementation implements EmployeeService {
@@ -27,7 +40,7 @@ public class EmployeeServiceImplementation implements EmployeeService {
     private void validateEmail(String email, Long id) {
 
         employeeRepository.findByEmail(email).ifPresent(existing -> {
-            if (id == null || !existing.getId().equals(id)) {
+            if (!existing.getId().equals(id)) {
                 throw new DuplicateEmailException("Email already exists: " + email);
             }
         });
@@ -106,7 +119,6 @@ public class EmployeeServiceImplementation implements EmployeeService {
     @Override
     public Page<EmployeeResponse> getAll(int page, int size, String sort,
                                          String department, Boolean active) {
-
         Pageable pageable = PageRequest.of(page, size, Sort.by(sort));
 
         Page<Employee> employees;
@@ -136,7 +148,6 @@ public class EmployeeServiceImplementation implements EmployeeService {
     }
 
     // HARD DELETE
-
     public void hardDelete(Long id) {
 
         Employee employee = employeeRepository.findById(id)
@@ -149,4 +160,55 @@ public class EmployeeServiceImplementation implements EmployeeService {
 
         employeeRepository.delete(employee);
     }
+
+    @Override
+    public void importExcel(MultipartFile file){
+
+        if (!ExcelHelper.isExcelFile(file)) {
+            throw new InvalidFileFormatException("Invalid file format");
+        }
+
+        try (InputStream inputStream = file.getInputStream();
+             Workbook workbook = new XSSFWorkbook(inputStream)) {
+
+            Sheet sheet = workbook.getSheetAt(0);
+
+            //Skip Header row
+            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+                Row row = sheet.getRow(i);
+
+                if (row == null) {
+                    continue;
+                }
+
+                Employee employee = new Employee();
+
+                employee.setFirstName(row.getCell(0).getStringCellValue());
+                employee.setLastName(row.getCell(1).getStringCellValue());
+                employee.setEmail(row.getCell(2).getStringCellValue());
+                employee.setDepartment(row.getCell(3).getStringCellValue());
+
+                employee.setSalary(
+                        BigDecimal.valueOf(
+                                row.getCell(4).getNumericCellValue()
+                        )
+                );
+                employee.setDateOfJoining(
+                        LocalDate.parse(
+                                row.getCell(5).getStringCellValue()
+                        )
+                );
+                employee.setActive(row.getCell(6).getBooleanCellValue());
+
+                //Validations
+                validateEmail(employee.getEmail(), null);
+                validateSalary(employee);
+
+                employeeRepository.save(employee);
+            }
+        } catch (Exception e) {
+            throw new ExcelProcessingException("Failed to process Excel file");
+        }
+    }
+
 }

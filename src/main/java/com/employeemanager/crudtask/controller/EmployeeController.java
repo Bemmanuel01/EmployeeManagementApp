@@ -4,10 +4,12 @@ import com.employeemanager.crudtask.dto.request.EmployeeRequest;
 import com.employeemanager.crudtask.dto.response.EmployeeResponse;
 import com.employeemanager.crudtask.service.service.EmployeeService;
 
+import org.springframework.http.MediaType;
 import jakarta.validation.Valid;
 
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/v1/employees")
@@ -55,5 +57,14 @@ public class EmployeeController {
     @DeleteMapping("/{id}/hard")
     public void hardDelete(@PathVariable Long id) {
         employeeService.hardDelete(id);
+    }
+    @PostMapping(
+            value = "/import",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public String importExcel(
+            @RequestParam("file") MultipartFile file){
+        employeeService.importExcel(file);
+        return "Excel file uploaded successfully!";
     }
 }

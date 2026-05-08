@@ -1,6 +1,7 @@
 package com.employeemanager.crudtask.exception;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,5 +56,14 @@ public class GlobalExceptionHandler {
         Map<String, String> error = new HashMap<>();
         error.put("message", ex.getMessage());
         return error;
+    }
+    @ExceptionHandler(InvalidFileFormatException.class)
+    public ResponseEntity<String> handleInvalidFileFormat(InvalidFileFormatException ex) {
+        return ResponseEntity.badRequest().body(ex.getMessage());
+    }
+
+    @ExceptionHandler(ExcelProcessingException.class)
+    public ResponseEntity<?> handleExcelProcessing(ExcelProcessingException ex) {
+        return ResponseEntity.internalServerError().body(ex.getMessage());
     }
 }
